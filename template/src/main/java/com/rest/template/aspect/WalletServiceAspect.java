@@ -54,6 +54,6 @@ public class WalletServiceAspect {
         System.out.println("\n----------------------------------------------------------------\n");
         log.error("\nMethod: {} threw an exception: {}\n",
                 joinPoint.getSignature().toShortString(),
-                error);
+                error.getMessage());
     }
 }

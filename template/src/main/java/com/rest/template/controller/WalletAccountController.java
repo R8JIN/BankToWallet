@@ -37,8 +37,14 @@ public class WalletAccountController extends BaseController {
 
 
     @GetMapping("/chalxa")
-    public ResponseEntity<Object> dockerChalxa(){
-        return ResponseEntity.ok(buildResponse("Chalyo"));
+    public ResponseEntity<Object> dockerRuns(){
+        try {
+            return ResponseEntity.ok(buildResponse("Chalyo"));
+        }
+        catch (Exception e){
+            System.out.printf("Message e: %s\n", e.getMessage());
+            return ResponseEntity.ok(buildResponse(null, "Chaldaina"));
+        }
     }
 
     @GetMapping
