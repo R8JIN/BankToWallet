@@ -8,7 +8,7 @@ GRANT ALL PRIVILEGES ON digital_wallet.* TO 'root'@'localhost';
 ```
 
 ### Change Directory to digitalWallet
-```
+```shell
 cd digitalWallet
 ```
 
