@@ -29,6 +29,7 @@ public class ImageUtils {
     }
 
     public static byte[] decompressImage(byte[] data) throws DataFormatException, IOException {
+
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);

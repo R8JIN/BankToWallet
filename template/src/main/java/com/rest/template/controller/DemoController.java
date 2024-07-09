@@ -3,6 +3,7 @@ package com.rest.template.controller;
 import com.rest.template.model.Demo;
 import com.rest.template.service.DemoService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,13 @@ import java.util.zip.DataFormatException;
 
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/images")
 @AllArgsConstructor
 public class DemoController extends BaseController{
 
     private final DemoService demoService;
 
-    @PostMapping("/image")
+    @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -32,9 +33,11 @@ public class DemoController extends BaseController{
                             demoService.uploadImage(file)
                     )
             );
-        }
-
-        catch (IOException e){
+        } catch(BadRequestException e){
+            return ResponseEntity.
+                    status(HttpStatus.BAD_REQUEST).
+                    body(buildResponse(null, e.getMessage()));
+        } catch (IOException e){
             return ResponseEntity.
                     status(HttpStatusCode.valueOf(503)).
                     body(buildResponse(null, e.getMessage()));
