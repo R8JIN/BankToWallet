@@ -2,15 +2,15 @@ package com.rest.template.controller;
 
 import com.rest.template.model.Demo;
 import com.rest.template.service.DemoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,11 +21,18 @@ import java.util.zip.DataFormatException;
 @RestController
 @RequestMapping("api/images")
 @AllArgsConstructor
+@Tag(
+        name = "Demo API to upload image",
+        description = "This is the description of Demo API to upload image"
+)
 public class DemoController extends BaseController{
 
     private final DemoService demoService;
 
     @PostMapping
+    @Operation(
+            description = "Post endpoint to upload image",
+            summary = "Upload image")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -45,6 +52,9 @@ public class DemoController extends BaseController{
     }
 
     @GetMapping("/image")
+    @Operation(
+            description="Get endpoint to retrieve all the image in base64",
+            summary="Retrieve all the image in Base64")
     public ResponseEntity<?>  getAllImage() throws
             DataFormatException, IOException {
         try {

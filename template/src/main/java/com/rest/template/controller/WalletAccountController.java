@@ -6,6 +6,8 @@ import com.rest.template.model.Demo;
 import com.rest.template.request.Account;
 import com.rest.template.service.WalletAccountService;
 import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -27,6 +29,10 @@ import java.util.zip.DataFormatException;
 @RestController
 @RequestMapping("/wallet-account")
 @AllArgsConstructor
+@Tag(
+        name = "Wallet Account API",
+        description = "This is the description of Digital Wallet Account API"
+)
 public class WalletAccountController extends BaseController {
 
     @Autowired
@@ -48,6 +54,9 @@ public class WalletAccountController extends BaseController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Find account by recipient Id",
+            description = "Get endpoint to obtain user account by recipient Id")
     public ResponseEntity<Object> findByRecipientId(
             @RequestParam String recipientId,
             @RequestParam String digitalWallet){
@@ -84,6 +93,9 @@ public class WalletAccountController extends BaseController {
     }
 
     @PutMapping
+    @Operation(
+            summary = "Update Amount of recipient's wallet",
+            description = "Put endpoint to update amount of recipient's wallet")
     public ResponseEntity<Object> updateWalletBalance(
             @RequestParam Double amount,
             @RequestParam String recipientId,
