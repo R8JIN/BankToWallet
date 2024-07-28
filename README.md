@@ -24,7 +24,7 @@ mvnw spring-boot:run
 
 ### Change Directory to tempalte
 ```shell
-cd template
+cd BankToWallet/template
 ```
 
 ### Installation
