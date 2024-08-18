@@ -1,14 +1,18 @@
 package com.factorymethod.digitalwallet.concrete_class;
 
 
+import com.factorymethod.digitalwallet.model.WalletStatement;
 import com.factorymethod.digitalwallet.request.WalletDetail;
+import com.factorymethod.digitalwallet.service.UserService;
 import com.factorymethod.digitalwallet.service.WalletService;
+import com.factorymethod.digitalwallet.service.WalletStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +23,8 @@ public class FonePay extends WalletService {
     private double walletBalance;
 
     @Autowired
-    public FonePay(RestTemplate restTemplate) {
-        super(restTemplate);
+    public FonePay(RestTemplate restTemplate, WalletStatementService walletStatementService, UserService userService){
+        super(restTemplate, walletStatementService, userService);
     }
     @Override
     public boolean verifyRecipientId(String recipientId, String walletService) {
@@ -82,11 +86,15 @@ public class FonePay extends WalletService {
             ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.PUT,
                     null, Object.class);
             log.info("Updated data: {}",response.getBody());
-            transactionDetail.put("FonePay Id", walletDetails.getRecipientId());
-            transactionDetail.put("Amount", walletDetails.getAmount());
-            transactionDetail.put("Remarks", walletDetails.getRemarks());
+            WalletStatement walletStatement = WalletStatement.builder().
+                    recipientId(walletDetails.getRecipientId()).
+                    digitalWallet(walletDetails.getDigitalWallet()).
+                    amount(walletDetails.getAmount()).
+                    remarks(walletDetails.getRemarks()).
+                    transactionDate(LocalDateTime.now()).
+                    build();
 
-            return transactionDetail;
+            return saveWalletStatement(walletDetails);
         }
 
         return null;

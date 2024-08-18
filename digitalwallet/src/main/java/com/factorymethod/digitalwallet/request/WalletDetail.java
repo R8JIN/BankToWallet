@@ -1,5 +1,7 @@
 package com.factorymethod.digitalwallet.request;
 
+import com.factorymethod.digitalwallet.model.User;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ public class WalletDetail {
     String recipientId;
     String remarks;
     String digitalWallet;
-
+    String username;
 
     @Override
     public String toString() {

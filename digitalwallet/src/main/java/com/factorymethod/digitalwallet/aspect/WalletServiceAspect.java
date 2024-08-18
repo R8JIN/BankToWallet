@@ -9,9 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Aspect
 @Component
@@ -39,7 +42,8 @@ public class WalletServiceAspect {
     }
 
     @Around("applicationPackagePointcut()")
-    public Object measureExecutionTime(ProceedingJoinPoint pjp) throws Throwable {
+    public Object measureExecutionTime(ProceedingJoinPoint pjp) throws Throwable
+    {
 
         WalletLog walletLog = new WalletLog();
         System.out.println("\n----------------------------------------------------------------\n");
@@ -48,12 +52,15 @@ public class WalletServiceAspect {
         WalletDetail request = (WalletDetail) requests[0];
         log.info("\n Recipient ID:{}", request.getRecipientId());
 
+
         walletLog.setRecipientId(request.getRecipientId());
         walletLog.setRequestPayload(request.toString());
 
         long start = System.currentTimeMillis();
+
         walletLog.setRequestTimeStamp(LocalDateTime.now());
-        Object output = pjp.proceed();
+        ResponseEntity output = (ResponseEntity) pjp.proceed();
+
         long elapsedTime = System.currentTimeMillis() - start;
         walletLog.setResponseTimeStamp(LocalDateTime.now());
 
@@ -61,7 +68,11 @@ public class WalletServiceAspect {
         System.out.println(pjp.getSignature() + " executed in " + elapsedTime + "ms\n");
         log.info("\nTransaction completed in {} ms\n", elapsedTime);
 
+        System.out.println(output.getBody().getClass());
+        HashMap<String, Object> outputHashMap = (HashMap<String, Object>) output.getBody();
 
+        System.out.println(outputHashMap.get("code"));
+//        System.out.println(responsePayload.get("code"));
         String jsonLikePart = stringPayload(output.toString());
         String code = stringObjectMap(jsonLikePart.substring(
                         jsonLikePart.indexOf("{")+1,
@@ -70,6 +81,8 @@ public class WalletServiceAspect {
         );
 
         log.info("\nRequest Value: {}", jsonLikePart);
+
+
         walletLog.setResponsePayload(jsonLikePart);
         walletLog.setStatus(code);
         walletLogRepository.save(walletLog);
@@ -100,6 +113,7 @@ public class WalletServiceAspect {
 
         int startIndex = output.indexOf("{");
         int endIndex = output.lastIndexOf("}");
+
 
         return output.substring(startIndex, endIndex + 1);
     }

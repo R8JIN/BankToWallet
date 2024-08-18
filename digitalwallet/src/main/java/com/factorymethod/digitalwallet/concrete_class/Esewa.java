@@ -1,8 +1,12 @@
 package com.factorymethod.digitalwallet.concrete_class;
 
 
+import com.factorymethod.digitalwallet.model.User;
+import com.factorymethod.digitalwallet.model.WalletStatement;
 import com.factorymethod.digitalwallet.request.WalletDetail;
+import com.factorymethod.digitalwallet.service.UserService;
 import com.factorymethod.digitalwallet.service.WalletService;
+import com.factorymethod.digitalwallet.service.WalletStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -10,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,8 +25,8 @@ public class Esewa extends WalletService {
     private double walletBalance;
 
     @Autowired
-    public Esewa(RestTemplate restTemplate){
-        super(restTemplate);
+    public Esewa(RestTemplate restTemplate, WalletStatementService walletStatementService, UserService userService){
+        super(restTemplate, walletStatementService, userService);
     }
 
     @Override
@@ -94,12 +99,9 @@ public class Esewa extends WalletService {
                 ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.PUT,
                         requestEntity, Object.class);
 
-                transactionDetail.put("Esewa Id", walletDetails.getRecipientId());
-                transactionDetail.put("Amount", walletDetails.getAmount());
-                transactionDetail.put("Remarks", walletDetails.getRemarks());
-
-                return transactionDetail;
+                return saveWalletStatement(walletDetails);
             }
+
 
         return null;
     }
