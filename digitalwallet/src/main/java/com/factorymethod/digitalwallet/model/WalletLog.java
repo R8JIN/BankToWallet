@@ -1,6 +1,7 @@
 package com.factorymethod.digitalwallet.model;
 
 
+import com.factorymethod.digitalwallet.request.WalletDetail;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

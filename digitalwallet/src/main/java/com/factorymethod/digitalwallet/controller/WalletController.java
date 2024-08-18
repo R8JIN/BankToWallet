@@ -6,10 +6,12 @@ import com.factorymethod.digitalwallet.exception.ResourceNotFoundException;
 import com.factorymethod.digitalwallet.exception.WalletServiceException;
 import com.factorymethod.digitalwallet.factory.WalletServiceFactory;
 import com.factorymethod.digitalwallet.model.WalletLog;
+import com.factorymethod.digitalwallet.model.WalletStatement;
 import com.factorymethod.digitalwallet.request.WalletDetail;
 import com.factorymethod.digitalwallet.service.WalletLogService;
 import com.factorymethod.digitalwallet.service.WalletService;
 
+import com.factorymethod.digitalwallet.service.WalletStatementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,8 +20,10 @@ import lombok.AllArgsConstructor;
 
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -35,11 +39,12 @@ import java.util.List;
         name = "Bank To Wallet API",
         description = "This is the description of API to transfer the money from bank to wallet"
 )
+
 public class WalletController extends BaseController{
 
     private final WalletServiceFactory walletServiceFactory;
     private final WalletLogService walletLogService;
-
+    private final WalletStatementService walletStatementService;
     @Autowired
     private RestTemplate restTemplate;
 
@@ -48,8 +53,8 @@ public class WalletController extends BaseController{
             description = "POST endpoint to load balance in wallet.",
             summary = "Load Balance in wallet")
     ResponseEntity<Object> loadBalance(@RequestBody WalletDetail walletDetails){
-
         try {
+
             WalletService walletService = walletServiceFactory.getService(
                     walletDetails.getDigitalWallet()
             );
@@ -63,7 +68,7 @@ public class WalletController extends BaseController{
 
             return ResponseEntity.
                     status(HttpStatus.NOT_FOUND).
-                    body(buildResponse(null, e.getMessage()));
+                    body(buildResponse(null, "Please enter valid account number or wallet service"));
 
         }
         catch(ClientSideException e){
@@ -105,6 +110,42 @@ public class WalletController extends BaseController{
 
         }
 
+    }
+
+    @GetMapping("/wallet-statement")
+    @Operation(
+            description = "Get endpoint to obtain wallet statement"
+    )
+    public ResponseEntity<Object> getAllWalletStatement(){
+        List<WalletStatement> walletStatements = walletStatementService.getAll();
+        if(walletStatements.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildResponse(null, "No statements"));
+        }
+        return ResponseEntity.ok(buildResponse(walletStatements));
+    }
+
+    @GetMapping("/user-statement")
+    @Operation(
+            description = "Get endpoint to obtain wallet statement based on Username"
+    )
+    public ResponseEntity<Object> getWalletStatementUser(@RequestParam String username){
+
+        List<WalletStatement> walletStatements = walletStatementService.getAllByUserName(username);
+        if(walletStatements.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildResponse(null, "No statements"));
+        }
+        return ResponseEntity.ok(buildResponse(walletStatements));
+    }
+
+
+    @DeleteMapping("/user-statement")
+    @Operation(
+            description = "Delete endpoint to delete wallet statement"
+    )
+    public ResponseEntity<Object> deleteStatementUser(@RequestParam String username){
+
+         walletStatementService.deleteByUser(username);
+         return ResponseEntity.ok(buildResponse("Deleted"));
     }
 
     @GetMapping("/wallet-log")

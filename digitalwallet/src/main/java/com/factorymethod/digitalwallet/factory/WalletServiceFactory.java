@@ -5,8 +5,12 @@ import com.factorymethod.digitalwallet.concrete_class.FonePay;
 import com.factorymethod.digitalwallet.concrete_class.ImePay;
 
 import com.factorymethod.digitalwallet.exception.WalletServiceException;
+import com.factorymethod.digitalwallet.model.User;
+import com.factorymethod.digitalwallet.service.UserService;
+import com.factorymethod.digitalwallet.service.WalletLogService;
 import com.factorymethod.digitalwallet.service.WalletService;
 
+import com.factorymethod.digitalwallet.service.WalletStatementService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,10 +20,15 @@ public class WalletServiceFactory {
 
 
     protected RestTemplate restTemplate;
-    public WalletServiceFactory(RestTemplate restTemplate
+    protected WalletStatementService walletStatementService;
+    protected UserService userService;
+    public WalletServiceFactory(RestTemplate restTemplate, WalletStatementService
+                                walletStatementService, UserService userService
     ) {
 
         this.restTemplate = restTemplate;
+        this.walletStatementService = walletStatementService;
+        this.userService = userService;
     }
 
     public WalletService getService(String service) throws WalletServiceException {
@@ -28,11 +37,11 @@ public class WalletServiceFactory {
             return null;
         }
         if(service.equalsIgnoreCase("ESEWA")){
-            return new Esewa(restTemplate
+            return new Esewa(restTemplate, walletStatementService, userService
             );
         }
         else if(service.equalsIgnoreCase("FONEPAY")){
-            return new FonePay(restTemplate
+            return new FonePay(restTemplate, walletStatementService, userService
             );
         }
         else if (service.equalsIgnoreCase("IMEPAY")){
