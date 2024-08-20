@@ -13,9 +13,9 @@ import com.factorymethod.digitalwallet.service.WalletService;
 
 import com.factorymethod.digitalwallet.service.WalletStatementService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+
 import lombok.AllArgsConstructor;
 
 import org.apache.coyote.Response;
@@ -222,8 +222,6 @@ public class WalletController extends BaseController{
         }
 
     }
-
-
 
 
 }
